@@ -100,7 +100,7 @@ public class PyleusTopologyBuilder {
 
         IRichSpout spout;
         if (spec.type.equals("kafka")) {
-            spout = handleKafkaSpout(builder, spec);
+            spout = handleKafkaSpout(builder, spec, topologySpec);
         } else {
             spout = handlePythonSpout(builder, spec, topologySpec);
         }
@@ -119,7 +119,8 @@ public class PyleusTopologyBuilder {
 
     public static IRichSpout handleKafkaSpout(
             @SuppressWarnings("unused") final TopologyBuilder builder,
-            final SpoutSpec spec) {
+            final SpoutSpec spec,
+            final TopologySpec topologySpec) {
         String topic = (String) spec.options.get("topic");
         if (topic == null) {
             throw new RuntimeException("Kafka spout must have topic");
@@ -132,14 +133,14 @@ public class PyleusTopologyBuilder {
 
         String zkRoot = (String) spec.options.get("zk_root");
         if (zkRoot == null) {
-            zkRoot = String.format(KAFKA_ZK_ROOT_FMT, spec.name);
+            zkRoot = String.format(KAFKA_ZK_ROOT_FMT, topologySpec.name);
         }
         
         String brokerZkPath = (String) spec.options.get("broker_zk_path");
         
         String consumerId = (String) spec.options.get("consumer_id");
         if (consumerId == null) {
-            consumerId = String.format(KAFKA_CONSUMER_ID_FMT, spec.name);
+            consumerId = String.format(KAFKA_CONSUMER_ID_FMT, topologySpec.name);
         }
 
         SpoutConfig config = new SpoutConfig(
